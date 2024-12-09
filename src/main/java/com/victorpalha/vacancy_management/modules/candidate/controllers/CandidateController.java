@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.Optional;
 
 @RestController
@@ -28,8 +29,11 @@ public class CandidateController {
     @PostMapping("/")
     public ResponseEntity<Object> create(@Valid @RequestBody CandidateEntity candidate){
         try{
-            CandidateEntity candidateCreated = this.createCandidateUseCase.execute(candidate);
-            return ResponseEntity.status(201).body(candidateCreated);
+            this.createCandidateUseCase.execute(candidate);
+            final HashMap<String, String> response = new HashMap<>();
+            response.put("message", "Candidate created");
+
+            return ResponseEntity.status(201).body(response);
         }catch (UserAlreadyExists e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
