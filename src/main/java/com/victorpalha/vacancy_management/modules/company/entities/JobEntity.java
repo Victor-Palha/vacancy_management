@@ -33,7 +33,7 @@ public class JobEntity {
 
     private boolean remote;
 
-    @Column(name = "company_id")
+    @Column(name = "company_id", nullable = false)
     private UUID companyId;
 
     @ManyToOne
