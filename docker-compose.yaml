@@ -1,0 +1,10 @@
+services:
+  postgres:
+    container_name: vacancy_management_postgres
+    image: bitnami/postgresql
+    environment:
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=postgres
+      - POSTGRESQL_DATABASE=postgres
+    ports:
+      - "5432:5432"
