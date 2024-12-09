@@ -10,8 +10,7 @@ import java.util.Optional;
 @Service
 public class CreateCandidateUseCase {
 
-    final
-    CandidateRepository candidateRepository;
+    private final CandidateRepository candidateRepository;
 
     public CreateCandidateUseCase(CandidateRepository candidateRepository) {
         this.candidateRepository = candidateRepository;
