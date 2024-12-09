@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-@Entity(name = "company")
+@Entity(name = "companies")
 public class CompanyEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
