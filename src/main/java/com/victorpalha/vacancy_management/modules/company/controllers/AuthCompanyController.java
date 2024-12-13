@@ -3,6 +3,7 @@ package com.victorpalha.vacancy_management.modules.company.controllers;
 import com.victorpalha.vacancy_management.exceptions.InvalidCredencials;
 import com.victorpalha.vacancy_management.modules.company.dto.AuthCompanyDTO;
 import com.victorpalha.vacancy_management.modules.company.useCases.AuthCompanyUseCase;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +23,6 @@ public class AuthCompanyController {
 
     @PostMapping("/company")
     public ResponseEntity<Object> authCompany(@RequestBody AuthCompanyDTO authCompanyDTO) {
-        System.out.println(authCompanyDTO);
         try{
             final String token = this.authCompanyUseCase.execute(authCompanyDTO);
             final HashMap<String, String> response = new HashMap<>();
@@ -30,7 +30,7 @@ public class AuthCompanyController {
 
             return ResponseEntity.ok(response);
         } catch (InvalidCredencials e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
 }

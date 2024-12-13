@@ -6,7 +6,8 @@ import com.victorpalha.vacancy_management.exceptions.InvalidCredencials;
 import com.victorpalha.vacancy_management.modules.company.dto.AuthCompanyDTO;
 import com.victorpalha.vacancy_management.modules.company.entities.CompanyEntity;
 import com.victorpalha.vacancy_management.modules.company.repository.CompanyRepository;
-import org.springframework.beans.factory.annotation.Value;
+import com.victorpalha.vacancy_management.providers.JWTProvider;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,14 +16,14 @@ import java.util.Optional;
 @Service
 public class AuthCompanyUseCase {
 
-    @Value("${security.token.secret}")
-    private String JWT_SECRET;
     final CompanyRepository companyRepository;
     final PasswordEncoder passwordEncoder;
+    final JWTProvider jwtProvider;
 
-    public AuthCompanyUseCase(CompanyRepository companyRepository, PasswordEncoder passwordEncoder) {
+    public AuthCompanyUseCase(CompanyRepository companyRepository, PasswordEncoder passwordEncoder, JWTProvider jwtProvider) {
         this.companyRepository = companyRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtProvider = jwtProvider;
     }
 
     public String execute(AuthCompanyDTO authCompanyDTO) {
@@ -35,13 +36,6 @@ public class AuthCompanyUseCase {
             throw new InvalidCredencials();
         }
         // Gen JWT
-        Algorithm algorithm = Algorithm.HMAC256(this.JWT_SECRET);
-
-        String jwtToken = JWT.create()
-                .withIssuer("AshFoundation")
-                .withSubject(companyExists.get().getId().toString())
-                .sign(algorithm);
-
-        return jwtToken;
+        return this.jwtProvider.generateToken(companyExists.get().getId().toString());
     }
 }
