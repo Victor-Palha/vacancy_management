@@ -1,7 +1,9 @@
 package com.victorpalha.vacancy_management.modules.company.controllers;
 
+import com.victorpalha.vacancy_management.modules.company.dto.CreateJobDTO;
 import com.victorpalha.vacancy_management.modules.company.entities.JobEntity;
 import com.victorpalha.vacancy_management.modules.company.useCases.CreateJobUseCase;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/jobs")
@@ -21,9 +24,13 @@ public class JobController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Object> execute(@Valid @RequestBody JobEntity job) {
+    public ResponseEntity<Object> execute(@Valid @RequestBody CreateJobDTO job, HttpServletRequest request) {
+        final Object companyId = request.getAttribute("entity_id");
+
+        JobEntity jobEntity = JobEntity.createFromDTO(job, companyId);
+
         try {
-            this.createJobUseCase.execute(job);
+            this.createJobUseCase.execute(jobEntity);
             final HashMap<String, String> response = new HashMap<>();
             response.put("message", "Job created successfully");
 

@@ -1,15 +1,22 @@
 package com.victorpalha.vacancy_management.modules.company.entities;
 
+import com.victorpalha.vacancy_management.modules.company.dto.CreateJobDTO;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Data
 @Entity(name = "jobs")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class JobEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -43,4 +50,18 @@ public class JobEntity {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+
+    public static JobEntity createFromDTO(CreateJobDTO job, Object companyId) {
+        return JobEntity.builder()
+                .description(job.getDescription())
+                .title(job.getTitle())
+                .level(job.getLevel())
+                .active(job.isActive())
+                .remote(job.isRemote())
+                .benefits(job.getBenefits())
+                .location(job.getLocation())
+                .companyId(UUID.fromString(companyId.toString()))
+                .build();
+    }
 }
