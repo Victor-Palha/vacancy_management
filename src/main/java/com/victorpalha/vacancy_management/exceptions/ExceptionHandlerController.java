@@ -1,5 +1,6 @@
 package com.victorpalha.vacancy_management.exceptions;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
@@ -13,23 +14,22 @@ import java.util.List;
 
 @ControllerAdvice
 public class ExceptionHandlerController {
+
     private final MessageSource messageSource;
 
     public ExceptionHandlerController(MessageSource messageSource) {
         this.messageSource = messageSource;
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<List<ErrorMessageDTO>> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<List<ErrorMessageDTO>> handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException e) {
         List<ErrorMessageDTO> dto = new ArrayList<>();
 
-        exception.getBindingResult().getFieldErrors().forEach(error -> {
-            String message = messageSource.getMessage(
-                    error,
-                    LocaleContextHolder.getLocale()
-            );
-            new ErrorMessageDTO(error.getField(), message);
-            dto.add(new ErrorMessageDTO(error.getField(), message));
+        e.getBindingResult().getFieldErrors().forEach(err -> {
+            String message = messageSource.getMessage(err, LocaleContextHolder.getLocale());
+            ErrorMessageDTO error = new ErrorMessageDTO(message, err.getField());
+            dto.add(error);
         });
 
         return new ResponseEntity<>(dto, HttpStatus.BAD_REQUEST);

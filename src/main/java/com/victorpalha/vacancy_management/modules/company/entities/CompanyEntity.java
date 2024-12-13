@@ -23,7 +23,7 @@ public class CompanyEntity {
     private String username;
     @Email(message = "The field [EMAIL] should be a valid email!")
     private String email;
-    @Length(min = 6, max = 20)
+    @Length(min = 6)
     private String password;
     @URL
     private String website;
