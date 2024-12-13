@@ -8,6 +8,7 @@ import com.victorpalha.vacancy_management.modules.company.entities.CompanyEntity
 import com.victorpalha.vacancy_management.modules.company.repository.CompanyRepository;
 import com.victorpalha.vacancy_management.providers.JWTProvider;
 
+import com.victorpalha.vacancy_management.security.SecurityRoles;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,6 @@ public class AuthCompanyUseCase {
             throw new InvalidCredencials();
         }
         // Gen JWT
-        return this.jwtProvider.generateToken(companyExists.get().getId().toString());
+        return this.jwtProvider.generateToken(companyExists.get().getId().toString(), SecurityRoles.COMPANY);
     }
 }
