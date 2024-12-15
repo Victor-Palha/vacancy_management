@@ -29,6 +29,9 @@ public class JobSpecification {
                         cb.equal(root.get("remote"), filter.isRemote()));
             }
 
+            specification = specification.and((root1, query1, cb) ->
+                    cb.equal(root.get("active"), true));
+
             return specification.toPredicate(root, query, criteriaBuilder);
         };
     }
