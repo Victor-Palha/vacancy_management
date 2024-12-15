@@ -1,25 +1,29 @@
 package com.victorpalha.vacancy_management.modules.candidate.controllers;
 
+import com.victorpalha.vacancy_management.exceptions.CandidateNotFound;
 import com.victorpalha.vacancy_management.exceptions.UserAlreadyExists;
+import com.victorpalha.vacancy_management.modules.candidate.dto.CandidateProfileResponseDTO;
 import com.victorpalha.vacancy_management.modules.candidate.entities.CandidateEntity;
 import com.victorpalha.vacancy_management.modules.candidate.useCases.CreateCandidateUseCase;
+import com.victorpalha.vacancy_management.modules.candidate.useCases.ProfileCandidateUseCase;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/candidate")
 public class CandidateController {
 
     private final CreateCandidateUseCase createCandidateUseCase;
-
-    public CandidateController(CreateCandidateUseCase createCandidateUseCase) {
+    private final ProfileCandidateUseCase profileCandidateUseCase;
+    public CandidateController(CreateCandidateUseCase createCandidateUseCase, ProfileCandidateUseCase profileCandidateUseCase) {
         this.createCandidateUseCase = createCandidateUseCase;
+        this.profileCandidateUseCase = profileCandidateUseCase;
     }
 
     @PostMapping("/")
@@ -32,6 +36,20 @@ public class CandidateController {
             return ResponseEntity.status(201).body(response);
         }catch (UserAlreadyExists e){
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<Object> get(HttpServletRequest request){
+        final String candidateId = request.getAttribute("entity_id").toString();
+        try{
+            CandidateProfileResponseDTO candidate = this.profileCandidateUseCase.execute(candidateId);
+            final HashMap<String, CandidateProfileResponseDTO> response = new HashMap<>();
+            response.put("data", candidate);
+
+            return ResponseEntity.status(200).body(response);
+        } catch (CandidateNotFound error){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error.getMessage());
         }
     }
 }

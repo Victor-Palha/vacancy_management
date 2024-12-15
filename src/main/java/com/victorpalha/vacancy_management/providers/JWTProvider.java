@@ -3,6 +3,7 @@ package com.victorpalha.vacancy_management.providers;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.victorpalha.vacancy_management.exceptions.InvalidToken;
 import com.victorpalha.vacancy_management.security.SecurityRoles;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ public class JWTProvider {
     @Value("${security.token.secret}")
     private String JWT_SECRET;
 
-    public String validateToken(String token) {
+    public String validateToken(String token) throws InvalidToken {
         final String jwt = token.replace("Bearer ", "");
         final Algorithm algorithm = Algorithm.HMAC256(this.JWT_SECRET);
         try {
@@ -27,7 +28,7 @@ public class JWTProvider {
                     .verify(jwt)
                     .getSubject();
         } catch (JWTVerificationException error){
-            return error.getMessage();
+            throw new InvalidToken();
         }
     }
 
