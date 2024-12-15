@@ -9,6 +9,9 @@ import com.victorpalha.vacancy_management.modules.candidate.useCases.CreateCandi
 import com.victorpalha.vacancy_management.modules.candidate.useCases.FindJobByFilterUseCase;
 import com.victorpalha.vacancy_management.modules.candidate.useCases.ProfileCandidateUseCase;
 import com.victorpalha.vacancy_management.modules.company.entities.JobEntity;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -64,6 +67,10 @@ public class CandidateController {
 
     @GetMapping("/jobs")
     @PreAuthorize("hasRole('CANDIDATE')")
+    @Tag(name = "Candidate", description = "Information to candidate")
+    @Operation(summary = "Find jobs provide by companies", description = "This endpoint providers all jobs available " +
+            "to candidates based on search filters")
+    @SecurityRequirement(name = "jwt_auth")
     public ResponseEntity<Object> getJobs(@RequestBody FindJobByFilterRequestDTO findJobByFilterRequestDTO){
 
         final List<JobEntity> jobs = this.findJobByFilterUseCase.execute(findJobByFilterRequestDTO);
