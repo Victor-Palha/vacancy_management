@@ -33,4 +33,8 @@ public class CandidateEntity {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    public void getProfile(){
+
+    }
 }
