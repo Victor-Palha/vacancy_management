@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/jobs")
+@RequestMapping("/company/jobs")
 public class JobController {
 
     private final CreateJobUseCase createJobUseCase;

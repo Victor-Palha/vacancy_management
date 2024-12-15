@@ -6,12 +6,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Map;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
@@ -28,9 +30,18 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         if (header != null) {
             try {
-                final String sub = this.jwtProvider.validateToken(header);
+                final Map<String, Object> jwtInformation = this.jwtProvider.validateToken(header);
+                final String sub = (String) jwtInformation.get("sub");
+                final String role = (String) jwtInformation.get("role");
+
+                if(!this.roleValidation(request, role)) {
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                    return;
+                }
+
                 request.setAttribute("entity_id", sub);
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(sub, null, Collections.emptyList());
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(sub
+                        , null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_"+role)));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             } catch (Exception error) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -39,5 +50,10 @@ public class SecurityFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private boolean roleValidation(HttpServletRequest request, String role){
+        String routerPermission = "/".concat(role.toLowerCase());
+        return request.getRequestURI().startsWith(routerPermission);
     }
 }
