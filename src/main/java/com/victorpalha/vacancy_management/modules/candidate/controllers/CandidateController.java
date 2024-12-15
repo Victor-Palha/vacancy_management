@@ -3,9 +3,12 @@ package com.victorpalha.vacancy_management.modules.candidate.controllers;
 import com.victorpalha.vacancy_management.exceptions.CandidateNotFound;
 import com.victorpalha.vacancy_management.exceptions.UserAlreadyExists;
 import com.victorpalha.vacancy_management.modules.candidate.dto.CandidateProfileResponseDTO;
+import com.victorpalha.vacancy_management.modules.candidate.dto.FindJobByFilterRequestDTO;
 import com.victorpalha.vacancy_management.modules.candidate.entities.CandidateEntity;
 import com.victorpalha.vacancy_management.modules.candidate.useCases.CreateCandidateUseCase;
+import com.victorpalha.vacancy_management.modules.candidate.useCases.FindJobByFilterUseCase;
 import com.victorpalha.vacancy_management.modules.candidate.useCases.ProfileCandidateUseCase;
+import com.victorpalha.vacancy_management.modules.company.entities.JobEntity;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -14,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -22,9 +26,12 @@ public class CandidateController {
 
     private final CreateCandidateUseCase createCandidateUseCase;
     private final ProfileCandidateUseCase profileCandidateUseCase;
-    public CandidateController(CreateCandidateUseCase createCandidateUseCase, ProfileCandidateUseCase profileCandidateUseCase) {
+    private final FindJobByFilterUseCase findJobByFilterUseCase;
+    public CandidateController(CreateCandidateUseCase createCandidateUseCase,
+                               ProfileCandidateUseCase profileCandidateUseCase, FindJobByFilterUseCase findJobByFilterUseCase) {
         this.createCandidateUseCase = createCandidateUseCase;
         this.profileCandidateUseCase = profileCandidateUseCase;
+        this.findJobByFilterUseCase = findJobByFilterUseCase;
     }
 
     @PostMapping("/")
@@ -53,5 +60,15 @@ public class CandidateController {
         } catch (CandidateNotFound error){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error.getMessage());
         }
+    }
+
+    @GetMapping("/jobs")
+    @PreAuthorize("hasRole('CANDIDATE')")
+    public ResponseEntity<Object> getJobs(@RequestBody FindJobByFilterRequestDTO findJobByFilterRequestDTO){
+
+        final List<JobEntity> jobs = this.findJobByFilterUseCase.execute(findJobByFilterRequestDTO);
+        final HashMap<String, List<JobEntity>> response = new HashMap<>();
+        response.put("data", jobs);
+        return ResponseEntity.status(200).body(response);
     }
 }
