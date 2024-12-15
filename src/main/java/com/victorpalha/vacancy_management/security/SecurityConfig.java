@@ -15,6 +15,11 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class SecurityConfig {
 
     final private SecurityFilter securityFilter;
+    private static final String[] SWAGGER_WHITELIST = {
+            "/swagger-ui/**",
+            "/swagger-resources/**",
+            "/v3/api-docs/**",
+    };
 
     public SecurityConfig(SecurityFilter securityFilter) {
         this.securityFilter = securityFilter;
@@ -29,6 +34,7 @@ public class SecurityConfig {
                     auth.requestMatchers("/candidate/").permitAll();
                     auth.requestMatchers("/auth/company").permitAll();
                     auth.requestMatchers("/company/").permitAll();
+                    auth.requestMatchers(SWAGGER_WHITELIST).permitAll();
                     // Add auth process to all others
                     auth.anyRequest().authenticated();
                 })
