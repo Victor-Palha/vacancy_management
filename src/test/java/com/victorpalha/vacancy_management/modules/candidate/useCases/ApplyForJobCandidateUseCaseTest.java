@@ -3,6 +3,7 @@ package com.victorpalha.vacancy_management.modules.candidate.useCases;
 import com.victorpalha.vacancy_management.exceptions.CandidateNotFound;
 import com.victorpalha.vacancy_management.exceptions.JobNotFound;
 import com.victorpalha.vacancy_management.modules.candidate.entities.CandidateEntity;
+import com.victorpalha.vacancy_management.modules.candidate.repository.ApplyJobRepository;
 import com.victorpalha.vacancy_management.modules.candidate.repository.CandidateRepository;
 import com.victorpalha.vacancy_management.modules.company.repository.JobRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +30,9 @@ public class ApplyForJobCandidateUseCaseTest {
 
     @Mock
     private JobRepository jobRepository;
+
+    @Mock
+    private ApplyJobRepository applyJobRepository;
 
     @Test
     @DisplayName("Should not be able to apply for job if candidate doesn't exists")
