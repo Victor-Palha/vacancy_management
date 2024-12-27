@@ -2,6 +2,7 @@ package com.victorpalha.vacancy_management.modules.candidate.useCases;
 
 import com.victorpalha.vacancy_management.exceptions.CandidateNotFound;
 import com.victorpalha.vacancy_management.exceptions.JobNotFound;
+import com.victorpalha.vacancy_management.modules.candidate.entities.ApplyJobsEntity;
 import com.victorpalha.vacancy_management.modules.candidate.entities.CandidateEntity;
 import com.victorpalha.vacancy_management.modules.candidate.repository.ApplyJobRepository;
 import com.victorpalha.vacancy_management.modules.candidate.repository.CandidateRepository;
@@ -23,7 +24,7 @@ public class ApplyForJobCandidateUseCase {
         this.jobRepository = jobRepository;
         this.applyJobRepository = applyJobRepository;
     }
-    public void execute(UUID idCandidate, UUID idJob) {
+    public ApplyJobsEntity execute(UUID idCandidate, UUID idJob) {
         Optional<CandidateEntity> candidateExists = this.candidateRepository.findById(idCandidate);
         if (candidateExists.isEmpty()){
             throw new CandidateNotFound();
@@ -33,6 +34,12 @@ public class ApplyForJobCandidateUseCase {
             throw new JobNotFound();
         }
 
+        ApplyJobsEntity applyJobsEntity = ApplyJobsEntity
+                .builder()
+                .candidateId(idCandidate)
+                .jobId(idJob)
+                .build();
 
+        return this.applyJobRepository.save(applyJobsEntity);
     }
 }
